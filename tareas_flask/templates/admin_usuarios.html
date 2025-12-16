@@ -1,13 +1,59 @@
-<h2>Gestión de usuarios</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
 
-<ul>
-  {% for u in usuarios %}
-    <li>
-      {{ u.username }}
-      {% if not u.es_admin %}
-        <a href="/admin/promover/{{ u.id }}">Promover</a>
-      {% endif %}
-      <a href="/admin/borrar/{{ u.id }}">Borrar</a>
-    </li>
-  {% endfor %}
-</ul>
+<div class="contenedor">
+    <h1>Gestión de Usuarios</h1>
+
+    <form method="get" class="buscador">
+        <input type="text" name="q" placeholder="Buscar por ID o nombre"
+               value="{{ busqueda }}">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Admin</th>
+                <th>Creado</th>
+                <th>Tareas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ "Sí" if u.es_admin else "No" }}</td>
+                <td>{{ u.creado_en.strftime("%d/%m/%Y %H:%M") if u.creado_en else "-" }}</td>
+                <td>{{ u.cantidad_tareas }}</td>
+                <td>
+                    {% if not u.es_admin %}
+                        <a class="btn" href="{{ url_for('admin.promover_usuario', id=u.id) }}">
+                            Promover
+                        </a>
+                    {% endif %}
+                    <a class="btn eliminar"
+                       href="{{ url_for('admin.eliminar_usuario', id=u.id) }}"
+                       onclick="return confirm('¿Eliminar usuario?')">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="volver" href="{{ url_for('tareas.tareas') }}">Volver</a>
+</div>
+
+</body>
+</html>
